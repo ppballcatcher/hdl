@@ -5,7 +5,9 @@ entity top is
     port(
         clk : in std_logic;
         leds : out std_logic_vector(7 downto 0);
-        btns : in std_logic_vector(3 downto 0));
+        btns : in std_logic_vector(3 downto 0);
+        JC7 : out std_logic;
+        JC8 : in std_logic);
 end top;
 
 architecture behavioral of top is
@@ -34,8 +36,8 @@ begin
     port map(
         Clk => clk,
         Reset => btns(0),
-        UART_Rx => '0',
-        UART_Tx => open,
+        UART_Rx => JC8,
+        UART_Tx => JC7,
         FIT1_Toggle => fit,
         PIT1_interrupt => open,
         PIT1_Toggle => open,
