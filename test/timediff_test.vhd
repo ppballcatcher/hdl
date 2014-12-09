@@ -18,6 +18,10 @@ architecture behavior of timediff_test is
 
     signal clk : std_logic;
     signal piezos : std_logic_vector(3 downto 0) := (others => '0');
+    signal timings_ready : std_logic := '0';
+    signal timings : std_logic_vector(31 downto 0);
+    signal save_timings : std_logic_vector(31 downto 0);
+    signal sel : std_logic_vector(1 downto 0);
     constant clk_in_period : time := 20 ns;
 
 begin
@@ -26,9 +30,9 @@ begin
         clk_i => clk,
         reset_i => '0',
         piezos_i => piezos,
-        timing_select_i => (others => '0'),
-        timing_o => open,
-        timings_ready_o => open);
+        timing_select_i => sel,
+        timing_o => timings,
+        timings_ready_o => timings_ready);
 
     clk_in_process : process
     begin
@@ -45,4 +49,13 @@ begin
             piezos(i) <= not piezos(i);
         end loop;
     end process;
+
+    reader : process(timings_ready)
+    begin
+        if rising_edge(timings_ready) then
+            sel <= "01";
+            save_timings <= timings;
+        end if;
+    end process;
+
 end;

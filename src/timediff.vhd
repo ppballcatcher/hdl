@@ -5,6 +5,7 @@ use ieee.numeric_std.all;
 entity timediff_t is
     port(
         clk_i           : in std_logic;
+        reset_i         : in std_logic;
         piezos_i        : in std_logic_vector(3 downto 0);
         timing_select_i : in std_logic_vector(1 downto 0);
         timing_o        : out std_logic_vector(31 downto 0);
@@ -22,25 +23,22 @@ architecture behavioral of timediff_t is
     end component;
 
     type lv_arr_32_t is array(natural range <>) of std_logic_vector(31 downto 0);
-    type lv_arr_2_t is array(natural range <>) of std_logic_vector(1 downto 0);
     constant num_piezos : integer := 4;
     signal clk_edges : std_logic_vector(31 downto 0) := (others => '0');
+    signal first_idx : unsigned(1 downto 0);
     signal timings : lv_arr_32_t(num_piezos - 1 downto 0);
     signal triggers : std_logic_vector(3 downto 0);
-    signal flipflops : lv_arr_2_t(num_piezos - 1 downto 0);
+    signal triggers_remember : std_logic_vector(3 downto 0);
 
 begin
-
-    -- Synchronize input to system clock
-    input_sync : process(clk_i)
-    begin
-        for i in 0 to num_piezos - 1 loop
-            if rising_edge(clk_i) then
-                flipflops(i)(0) <= piezos_i(i);
-                flipflops(i)(1) <= flipflops(i)(0);
-            end if;
-        end loop;
-    end process;
+    gen_inputs:
+    for i in 0 to num_piezos - 1 generate
+        piezo_in : piezo_in_t
+        port map(
+            clk_i => clk_i,
+            piezo_i => piezos_i(i),
+            out_o => triggers(i));
+    end generate;
 
     out_mux : process (timing_select_i)
     begin
@@ -53,27 +51,78 @@ begin
         end case;
     end process;
 
-    clk_count : process(clk_i) -- TODO handle overflow
+    clk_count : process(clk_i) -- TODO
     begin
         if rising_edge(clk_i) then
             clk_edges <= std_logic_vector(unsigned(clk_edges) + 1);
         end if;
     end process;
 
-    time_rec : process(triggers)
-        variable sample_count : integer range 0 to num_piezos := 0;
+    trig_enable : process(clk_i, reset_i)
     begin
-        for i in 0 to num_piezos - 1 loop
-            if rising_edge(triggers(i)) then
-                timings(i) <= clk_edges;
-                sample_count := sample_count + 1;
+        if reset_i = '1' then
+            triggers_remember <= "0000";
+        elsif rising_edge(clk_i) then
+            triggers_remember <= triggers_remember or triggers;
+        end if;
+    end process;
 
-                if sample_count = num_piezos - 1 then
-                    sample_count := 0;
-                    timings_ready_o <= '1'; -- TODO
-                end if;
+    time_rec_0 : process(triggers(0))
+    begin
+        if rising_edge(triggers(0)) then
+            if triggers_remember = "0000" then
+                clk_edges_first <= clk_edges;
             end if;
-        end loop;
+
+            timings(0) <= std_logic_vector(unsigned(clk_edges) - unsigned(timings(first_idx)));
+        end if;
+    end process;
+
+    time_rec_1 : process(triggers(1))
+    begin
+        if rising_edge(triggers(1)) then
+            if triggers_remember = "0000" then
+                clk_edges_first <= clk_edges;
+            end if;
+
+            timings(1) <= std_logic_vector(unsigned(clk_edges) - unsigned(timings(first_idx)));
+        end if;
+    end process;
+
+    time_rec_2 : process(triggers(2))
+    begin
+        if rising_edge(triggers(2)) then
+            if triggers_remember = "0000" then
+                clk_edges_first <= clk_edges;
+            end if;
+
+            timings(2) <= std_logic_vector(unsigned(clk_edges) - unsigned(timings(first_idx)));
+        end if;
+    end process;
+
+    time_rec_3 : process(triggers(3))
+    begin
+        if rising_edge(triggers(3)) then
+            if triggers_remember = "0000" then
+                clk_edges_first <= clk_edges;
+            end if;
+
+            timings(3) <= std_logic_vector(unsigned(clk_edges) - unsigned(timings(first_idx)));
+        end if;
+    end process;
+
+    triggers_state : process(triggers_remember)
+    begin
+        case triggers_remember is
+            when "1111" =>
+                timings_ready_o <= '1';
+
+            --when "0001" or "0010" or "0100" or "1000" =>
+                -- First measure
+
+            when others =>
+                timings_ready_o <= '0';
+        end case;
     end process;
 
 end behavioral;

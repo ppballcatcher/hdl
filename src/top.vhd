@@ -8,7 +8,7 @@ entity top is
         btns : in std_logic_vector(0 downto 0);
         UART_RX : in std_logic;
         UART_TX : out std_logic;
-        PIEZO : in std_logic_vector(3 downto 0));
+        piezos : in std_logic_vector(3 downto 0));
 end top;
 
 architecture behavioral of top is
@@ -31,6 +31,7 @@ architecture behavioral of top is
     component timediff_t is
         port(
             clk_i : in std_logic;
+            reset_i : in std_logic;
             piezos_i : in std_logic_vector(3 downto 0);
             timing_select_i : in std_logic_vector(1 downto 0);
             timing_o : out std_logic_vector(31 downto 0);
@@ -39,9 +40,14 @@ architecture behavioral of top is
 
     signal fit : std_logic;
     signal timing : std_logic_vector(31 downto 0);
+    signal timediff_reset : std_logic;
+    signal timediff_ready : std_logic;
+    signal timediff_select : std_logic_vector(31 downto 0);
+    signal intc_isr : std_logic_vector(1 downto 0);
 
 begin
     leds <= fit & not fit;
+    intc_isr <= "0" & timediff_ready;
 
     mcs_0 : microblaze_mcs_v1_4
     port map(
@@ -52,20 +58,21 @@ begin
         FIT1_Toggle => fit,
         PIT1_interrupt => open,
         PIT1_Toggle => open,
-        GPO1 => open,
+        GPO1 => timediff_select,
         GPI1 => timing,
         GPI1_interrupt => open,
-        inTC_interrupt => (others => '0'),
+        inTC_interrupt => intc_isr,
         inTC_IRQ => open
     );
 
     timediff_0 : timediff_t
     port map(
         clk_i => clk,
+        reset_i => timediff_reset,
         piezos_i => piezos,
-        timing_select_i => '0', -- TODO
+        timing_select_i => timediff_select(1 downto 0),
         timing_o => timing,
-        timings_ready_o => open); -- TODO
+        timings_ready_o => timediff_ready);
 
 end behavioral;
 
