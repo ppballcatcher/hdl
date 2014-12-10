@@ -1,7 +1,7 @@
 ##############################################################
 #
 # Xilinx Core Generator version 14.7
-# Date: Mon Dec  8 18:32:43 2014
+# Date: Wed Dec 10 14:13:06 2014
 #
 ##############################################################
 #
@@ -104,11 +104,11 @@ CSET use_fit2=false
 CSET use_fit3=false
 CSET use_fit4=false
 CSET use_gpi1=true
-CSET use_gpi2=false
-CSET use_gpi3=false
-CSET use_gpi4=false
+CSET use_gpi2=true
+CSET use_gpi3=true
+CSET use_gpi4=true
 CSET use_gpo1=true
-CSET use_gpo2=false
+CSET use_gpo2=true
 CSET use_gpo3=false
 CSET use_gpo4=false
 CSET use_io_bus=false
@@ -123,4 +123,4 @@ CSET use_uart_tx=true
 MISC pkg_timestamp=2012-11-21T08:11:43Z
 # END Extra information
 GENERATE
-# CRC: c96211f6
+# CRC: 468df420

@@ -65,8 +65,15 @@ COMPONENT microblaze_mcs_v1_4
     PIT1_Interrupt : OUT STD_LOGIC;
     PIT1_Toggle : OUT STD_LOGIC;
     GPO1 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
+    GPO2 : OUT STD_LOGIC_VECTOR(31 DOWNTO 0);
     GPI1 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
     GPI1_Interrupt : OUT STD_LOGIC;
+    GPI2 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    GPI2_Interrupt : OUT STD_LOGIC;
+    GPI3 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    GPI3_Interrupt : OUT STD_LOGIC;
+    GPI4 : IN STD_LOGIC_VECTOR(31 DOWNTO 0);
+    GPI4_Interrupt : OUT STD_LOGIC;
     INTC_Interrupt : IN STD_LOGIC_VECTOR(1 DOWNTO 0);
     INTC_IRQ : OUT STD_LOGIC
   );
@@ -87,8 +94,15 @@ your_instance_name : microblaze_mcs_v1_4
     PIT1_Interrupt => PIT1_Interrupt,
     PIT1_Toggle => PIT1_Toggle,
     GPO1 => GPO1,
+    GPO2 => GPO2,
     GPI1 => GPI1,
     GPI1_Interrupt => GPI1_Interrupt,
+    GPI2 => GPI2,
+    GPI2_Interrupt => GPI2_Interrupt,
+    GPI3 => GPI3,
+    GPI3_Interrupt => GPI3_Interrupt,
+    GPI4 => GPI4,
+    GPI4_Interrupt => GPI4_Interrupt,
     INTC_Interrupt => INTC_Interrupt,
     INTC_IRQ => INTC_IRQ
   );

@@ -141,7 +141,7 @@ NET "leds<1>"      LOC = "J15";   # Bank = 1, Pin name = IO_L14P_1/A4/RHCLK6, Ty
 
 ## Buttons
 NET "btns<0>"      LOC = "B18";   # Bank = 1, Pin name = IP, Type = INPUT,                             Sch name = BTN0
-#NET "btns<1>"      LOC = "D18";   # Bank = 1, Pin name = IP/VREF_1, Type = VREF,                       Sch name = BTN1
+NET "btns<1>"      LOC = "D18";   # Bank = 1, Pin name = IP/VREF_1, Type = VREF,                       Sch name = BTN1
 #NET "btns<2>"      LOC = "E18";   # Bank = 1, Pin name = IP, Type = INPUT,                             Sch name = BTN2
 #NET "btns<3>"      LOC = "H13";   # Bank = 1, Pin name = IP, Type = INPUT,                             Sch name = BTN3
 
