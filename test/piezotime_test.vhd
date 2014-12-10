@@ -23,7 +23,11 @@ architecture behavior of piezotime_test is
     signal piezos : std_logic_vector(3 downto 0) := (others => '0');
     signal timings_ready : std_logic := '0';
     signal timings : lv_arr_32_t(3 downto 0);
+
     constant clk_in_period : time := 20 ns;
+    constant startup_time : time := 1 ms;
+    constant piezo_period : time := 1 ms;
+    constant drop_period : time := 20 ms; -- not realistic
 
 begin
     uut: piezotime_t
@@ -37,29 +41,52 @@ begin
     clk_proc : process
     begin
         clk <= '0';
-        wait for clk_in_period/2;
+        wait for clk_in_period / 2;
         clk <= '1';
-        wait for clk_in_period/2;
-    end process;
-
-    input_proc : process
-    begin
-        for i in 0 to 3 loop
-            wait for 170 ns;
-            piezos(i) <= not piezos(i);
-        end loop;
+        wait for clk_in_period / 2;
     end process;
 
     reset_proc : process
     begin
         reset <= '1';
-        wait for 400 ns;
+        wait for startup_time;
         reset <= '0';
-        wait for 1000 ns;
+        wait for drop_period;
         reset <= '1';
-        wait for 400 ns;
-        reset <= '0';
-        wait;
     end process;
+
+    input_proc_0:
+    for i in 0 to 1 generate
+        process
+        begin
+            piezos(i) <= '0';
+            wait for startup_time + piezo_period * (i + 1);
+
+            for j in 0 to 10 loop
+                piezos(i) <= not piezos(i);
+                wait for piezo_period / 2;
+            end loop;
+
+            piezos(i) <= '0';
+            wait for drop_period;
+        end process;
+    end generate;
+
+    input_proc_1:
+    for i in 2 to 3 generate
+        process
+        begin
+            piezos(i) <= '0';
+            wait for startup_time + piezo_period * (i + 1) + drop_period / 2;
+
+            for j in 0 to 10 loop
+                piezos(i) <= not piezos(i);
+                wait for piezo_period / 2;
+            end loop;
+
+            piezos(i) <= '0';
+            wait for drop_period;
+        end process;
+    end generate;
 
 end;

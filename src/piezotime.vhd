@@ -28,6 +28,7 @@ architecture behavioral of piezotime_t is
     signal triggered : std_logic_vector(3 downto 0) := (others => '0');
     signal saved : std_logic_vector(3 downto 0) := (others => '0');
     signal smallest : std_logic_vector(31 downto 0) := (others => '0');
+    signal timings_raw : lv_arr_32_t(3 downto 0) := (others => (others => '0'));
 
 begin
     gen_input_latches:
@@ -66,7 +67,7 @@ begin
                             smallest <= clk_edges;
                         end if;
 
-                        timings(i) <= std_logic_vector(unsigned(clk_edges) - unsigned(smallest));
+                        timings_raw(i) <= clk_edges;
                         saved(i) <= '1';
                     end if;
                 end loop;
@@ -74,6 +75,20 @@ begin
         end if;
     end process;
 
-    timings_ready <= '1' when saved = "1111" else '0';
+    diff:
+    process (clk)
+    begin
+        if rising_edge(clk) then
+            if saved = "1111" then
+                for i in 0 to 3 loop
+                    timings(i) <= std_logic_vector(unsigned(timings_raw(i)) - unsigned(smallest));
+                end loop;
+
+                timings_ready <= '1';
+            else
+                timings_ready <= '0';
+            end if;
+        end if;
+    end process;
 
 end behavioral;
