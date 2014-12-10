@@ -1,8 +1,11 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
+library work;
+use work.types.all;
+
 entity top is
-    port(
+    port (
         clk : in std_logic;
         leds : out std_logic_vector(1 downto 0);
         btns : in std_logic_vector(0 downto 0);
@@ -13,7 +16,7 @@ end top;
 
 architecture behavioral of top is
     component microblaze_mcs_v1_4
-        port(
+        port (
             Clk : in std_logic;
             Reset : in std_logic;
             UART_Rx : in std_logic;
@@ -28,29 +31,40 @@ architecture behavioral of top is
             inTC_IRQ : out std_logic);
     end component;
 
-    component timediff_t is
-        port(
-            clk_i : in std_logic;
-            reset_i : in std_logic;
-            piezos_i : in std_logic_vector(3 downto 0);
-            timing_select_i : in std_logic_vector(1 downto 0);
-            timing_o : out std_logic_vector(31 downto 0);
-            timings_ready_o : out std_logic);
+--    component timediff_t is
+--        port (
+--            clk_i : in std_logic;
+--            reset_i : in std_logic;
+--            piezos_i : in std_logic_vector(3 downto 0);
+--            timing_select_i : in std_logic_vector(1 downto 0);
+--            timing_o : out std_logic_vector(31 downto 0);
+--            timings_ready_o : out std_logic);
+--    end component;
+
+    component piezotime_t is
+    port (
+        clk           : in std_logic;
+        reset         : in std_logic; -- active high
+        piezos        : in std_logic_vector(3 downto 0);
+        timings       : out lv_arr_32_t(3 downto 0);
+        timings_ready : out std_logic);
     end component;
 
     signal fit : std_logic;
-    signal timing : std_logic_vector(31 downto 0);
-    signal timediff_reset : std_logic;
-    signal timediff_ready : std_logic;
+    --signal timing : std_logic_vector(31 downto 0);
+    signal timings_reset : std_logic;
+    signal timings_ready : std_logic;
     signal timediff_select : std_logic_vector(31 downto 0);
     signal intc_isr : std_logic_vector(1 downto 0);
 
+    signal timings : lv_arr_32_t(3 downto 0);
+
 begin
     leds <= fit & not fit;
-    intc_isr <= "0" & timediff_ready;
+    intc_isr <= "0" & timings_ready;
 
     mcs_0 : microblaze_mcs_v1_4
-    port map(
+    port map (
         Clk => clk,
         Reset => btns(0),
         UART_Rx => UART_RX,
@@ -59,20 +73,28 @@ begin
         PIT1_interrupt => open,
         PIT1_Toggle => open,
         GPO1 => timediff_select,
-        GPI1 => timing,
+        GPI1 => timings(0), -- TODO
         GPI1_interrupt => open,
         inTC_interrupt => intc_isr,
         inTC_IRQ => open
     );
 
-    timediff_0 : timediff_t
-    port map(
-        clk_i => clk,
-        reset_i => timediff_reset,
-        piezos_i => piezos,
-        timing_select_i => timediff_select(1 downto 0),
-        timing_o => timing,
-        timings_ready_o => timediff_ready);
+    piezotime_0 : piezotime_t
+    port map (
+        clk => clk,
+        reset => timings_reset,
+        piezos => piezos,
+        timings => timings,
+        timings_ready => timings_ready);
+--
+--    timediff_0 : timediff_t
+--    port map(
+--        clk_i => clk,
+--        reset_i => timediff_reset,
+--        piezos_i => piezos,
+--        timing_select_i => timediff_select(1 downto 0),
+--        timing_o => timing,
+--        timings_ready_o => timediff_ready);
 
 end behavioral;
 
