@@ -48,9 +48,8 @@ architecture behavioral of top is
     end component;
 
     signal fit : std_logic;
-    signal timings_reset : std_logic;
+    signal timings_reset : std_logic_vector(31 downto 0);
     signal timings_ready : std_logic;
-    signal timediff_select : std_logic_vector(31 downto 0);
     signal intc_isr : std_logic_vector(1 downto 0);
     signal timings : lv_arr_32_t(3 downto 0);
 
@@ -67,7 +66,7 @@ begin
         FIT1_Toggle => fit,
         PIT1_interrupt => open,
         PIT1_Toggle => open,
-        GPO1 => open,
+        GPO1 => timings_reset,
         GPO2 => open,
         GPI1 => timings(0),
         GPI1_Interrupt => open,
@@ -84,7 +83,7 @@ begin
     piezotime_0 : piezotime_t
     port map (
         clk => clk,
-        reset => timings_reset,
+        reset => timings_reset(0),
         piezos => piezos,
         timings => timings,
         timings_ready => timings_ready);
