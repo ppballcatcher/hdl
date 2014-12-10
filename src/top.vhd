@@ -7,7 +7,7 @@ use work.types.all;
 entity top is
     port (
         clk : in std_logic;
-        leds : out std_logic_vector(1 downto 0);
+        leds : out std_logic_vector(3 downto 0);
         btns : in std_logic_vector(1 downto 0);
         UART_RX : in std_logic;
         UART_TX : out std_logic;
@@ -24,17 +24,17 @@ architecture behavioral of top is
         FIT1_Toggle : out std_logic;
         PIT1_interrupt : out std_logic;
         PIT1_Toggle : out std_logic;
-        GPO1 : out std_logic_vector(31 DOWNTO 0);
-        GPO2 : out std_logic_vector(31 DOWNTO 0);
-        GPI1 : in std_logic_vector(31 DOWNTO 0);
+        GPO1 : out std_logic_vector(31 downto 0);
+        GPO2 : out std_logic_vector(31 downto 0);
+        GPI1 : in std_logic_vector(31 downto 0);
         GPI1_interrupt : out std_logic;
-        GPI2 : in std_logic_vector(31 DOWNTO 0);
+        GPI2 : in std_logic_vector(31 downto 0);
         GPI2_interrupt : out std_logic;
-        GPI3 : in std_logic_vector(31 DOWNTO 0);
+        GPI3 : in std_logic_vector(31 downto 0);
         GPI3_interrupt : out std_logic;
-        GPI4 : in std_logic_vector(31 DOWNTO 0);
+        GPI4 : in std_logic_vector(31 downto 0);
         GPI4_interrupt : out std_logic;
-        inTC_interrupt : in std_logic_vector(1 DOWNTO 0);
+        inTC_interrupt : in std_logic_vector(1 downto 0);
         inTC_IRQ : out std_logic);
     end component;
 
@@ -54,7 +54,7 @@ architecture behavioral of top is
     signal timings : lv_arr_32_t(3 downto 0);
 
 begin
-    leds <= fit & not fit;
+    leds <= fit & not fit & timings_ready & timings_reset(0);
     intc_isr <= timings_ready & btns(1);
 
     mcs_0 : microblaze_mcs_v1_4
