@@ -11,7 +11,8 @@ entity c_sr_latch_t is
 end c_sr_latch_t;
 
 architecture arch of c_sr_latch_t is
-    signal Qt, QNt : std_logic;
+    signal Qt  : std_logic := '0';
+    signal QNt : std_logic := '0';
 
 begin
     Q <= Qt;
