@@ -4,9 +4,9 @@ use ieee.numeric_std.all;
 
 entity pwm_t is
     generic(
-        clk_in_freq     : integer := 50000000; -- input clock frequency
-        pwm_out_freq    : integer := 50; -- frequency of the PWM output
-        bits_resolution : integer := 32); -- resolution of 'duty_in'
+        constant clk_in_freq     : integer := 50000000; -- input clock frequency
+        constant pwm_out_freq    : integer := 50; -- frequency of the PWM output
+        constant bits_resolution : integer := 8); -- resolution of 'duty_in'
     port(
         clk_in          : in std_logic; -- input clock
         duty_in         : in std_logic_vector(bits_resolution - 1 downto 0); -- duty cycle
@@ -25,7 +25,7 @@ begin
         if (rising_edge(clk_in)) then
             if (duty_latch_in = '1') then
                 -- map 'duty_in' from [0; 2^bits_resolution] -> [0; period_num_clocks]
-                duty_clocks <= to_integer(unsigned(duty_in)) * 23283;--period_num_clocks / (2**(bits_resolution-1));
+                duty_clocks <= to_integer(unsigned(duty_in)) * period_num_clocks / (2**bits_resolution);
             end if;
 
             count <= count + 1;

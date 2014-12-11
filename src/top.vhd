@@ -12,7 +12,7 @@ entity top is
         UART_RX : in std_logic;
         UART_TX : out std_logic;
         piezos : in std_logic_vector(3 downto 0);
-		  PWM_SERVO_O : out std_logic);
+		PWM_SERVO_O : out std_logic);
 end top;
 
 architecture behavioral of top is
@@ -48,21 +48,23 @@ architecture behavioral of top is
         timings_ready : out std_logic);
     end component;
 
+    constant pwm_resolution : integer := 10;
+
     component pwm_t is
         generic(
             clk_in_freq     : integer := 50000000; -- input clock frequency
             pwm_out_freq    : integer := 50; -- frequency of the PWM output
-            bits_resolution : integer := 32); -- resolution of 'duty_in'
+            bits_resolution : integer := pwm_resolution); -- resolution of 'duty_in'
         port(
             clk_in          : in std_logic; -- input clock
-            duty_in         : in std_logic_vector(bits_resolution - 1 downto 0); -- duty cycle
+            duty_in         : in std_logic_vector(pwm_resolution - 1 downto 0); -- duty cycle
             duty_latch_in   : in std_logic; -- when high latches in duty new cycle on 'duty_in'
             pwm_out         : out std_logic); -- PWM output signal
     end component;
 
 	-- PWM
-   signal servo_duty_in       : std_logic_vector(31 downto 0); -- duty cycle
-   signal servo_duty_latch_in : std_logic; -- when high latches in duty new cycle on 'duty_in'
+    signal servo_duty_in       : std_logic_vector(31 downto 0); -- duty cycle
+    signal servo_duty_latch_in : std_logic; -- when high latches in duty new cycle on 'duty_in'
 
     signal fit : std_logic;
     signal timings_reset : std_logic_vector(31 downto 0);
@@ -74,11 +76,11 @@ begin
     leds <= fit & not fit & timings_ready & timings_reset(0);
     intc_isr <= timings_ready & btns(1);
 	servo_duty_latch_in <= '1';
-	servo_duty_in <= "01000000000000000000100110000000";
+
     servo : pwm_t
     port map (
         clk_in => clk,
-        duty_in => servo_duty_in,
+        duty_in => servo_duty_in(pwm_resolution - 1 downto 0),
         duty_latch_in => servo_duty_latch_in,
         pwm_out => PWM_SERVO_O);
 
@@ -92,7 +94,7 @@ begin
         PIT1_interrupt => open,
         PIT1_Toggle => open,
         GPO1 => timings_reset,
-        GPO2 => open,--servo_duty_in,
+        GPO2 => servo_duty_in,
         GPI1 => timings(0),
         GPI1_Interrupt => open,
         GPI2 => timings(1),
