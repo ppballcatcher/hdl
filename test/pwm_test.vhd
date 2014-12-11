@@ -47,7 +47,19 @@ begin
     begin
         wait for clk_in_period;
 
-        duty_in <= (duty_in'length - 2 => '1', others => '0'); -- 50%
+        duty_in <= (duty_in'length - 1 => '1', others => '0'); -- 50%
+        duty_latch_in <= '1';
+        wait for clk_in_period;
+        duty_latch_in <= '0';
+        wait for 100 ms;
+
+        duty_in <= "0001100110"; -- 10%
+        duty_latch_in <= '1';
+        wait for clk_in_period;
+        duty_latch_in <= '0';
+        wait for 100 ms;
+
+        duty_in <= "0000110011"; -- 5%
         duty_latch_in <= '1';
         wait for clk_in_period;
         duty_latch_in <= '0';
