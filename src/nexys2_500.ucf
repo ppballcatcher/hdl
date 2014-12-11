@@ -230,11 +230,12 @@ NET "UART_RX"       LOC = "G15";   # Bank = 1, Pin name = IO_L18P_1, Type = I/O,
 NET "UART_TX"       LOC = "J16";   # Bank = 1, Pin name = IO_L13N_1/A5/RHCLK5, Type = RHCLK/DUAL,       Sch name = JC2
 #NET "JC3"       LOC = "G13";   # Bank = 1, Pin name = IO_L20N_1, Type = I/O,                        Sch name = JC3
 #NET "JC4"       LOC = "H16";   # Bank = 1, Pin name = IO_L16P_1, Type = I/O,                        Sch name = JC4
-NET "piezos<0>"       LOC = "H15";   # Bank = 1, Pin name = IO_L17N_1, Type = I/O,                        Sch name = JC7
-NET "piezos<1>"       LOC = "F14";   # Bank = 1, Pin name = IO_L21N_1, Type = I/O,                        Sch name = JC8
-NET "piezos<2>"       LOC = "G16";   # Bank = 1, Pin name = IO_L18N_1, Type = I/O,                        Sch name = JC9
-NET "piezos<3>"       LOC = "J12";   # Bank = 1, Pin name = IO_L15P_1/A2, Type = DUAL,                    Sch name = JC10
-
+NET "piezos<0>"      LOC = "H15";   # Bank = 1, Pin name = IO_L17N_1, Type = I/O,                        Sch name = JC7
+NET "piezos<1>"      LOC = "F14";   # Bank = 1, Pin name = IO_L21N_1, Type = I/O,                        Sch name = JC8
+NET "piezos<2>"      LOC = "G16";   # Bank = 1, Pin name = IO_L18N_1, Type = I/O,                        Sch name = JC9
+NET "piezos<3>"      LOC = "J12";   # Bank = 1, Pin name = IO_L15P_1/A2, Type = DUAL,                    Sch name = JC10
+NET "PWM_SERVO_O"		LOC = "G13"; # servo pwm on JC3
+# NET "NC" 				LOC = "H16";
 ##JD - NOTE: For other JD pins see LD(3:0) above under "Leds"
 #NET "JD<0>"       LOC = "J13";   # Bank = 1, Pin name = IO_L15N_1/A1, Type = DUAL,                    Sch name = JD1
 #NET "JD<1>"       LOC = "M18";   # Bank = 1, Pin name = IO_L08N_1, Type = I/O,                        Sch name = JD2
