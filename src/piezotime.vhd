@@ -63,11 +63,12 @@ begin
             else
                 for i in 0 to 3 loop
                     if triggered(i) = '1' and saved(i) = '0' then
-                        if saved = "0000" then
-                            smallest <= clk_edges;
-                        end if;
-
-                        timings(i) <= std_logic_vector(unsigned(clk_edges) - unsigned(smallest));
+--                        if saved = "0000" then
+--                            smallest <= clk_edges;
+--                        end if;
+	
+                        --timings(i) <= std_logic_vector(unsigned(clk_edges) - unsigned(smallest));
+								timings(i) <= clk_edges;
                         saved(i) <= '1';
                     end if;
                 end loop;
